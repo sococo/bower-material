@@ -2,7 +2,7 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.10.1-master-c9f2b9f
+ * v0.10.2-rc1
  */
 (function( window, angular, undefined ){
 "use strict";
@@ -82,9 +82,8 @@ function MdAutocompleteCtrl ($scope, $element, $mdUtil, $mdConstant, $mdTheming,
     configureWatchers();
     $mdUtil.nextTick(function () {
       gatherElements();
-      moveDropdown();
       focusElement();
-      $element.on('focus', focusElement);
+      moveDropdown();
     });
   }
 

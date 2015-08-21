@@ -7,7 +7,7 @@
 
 // Typography
 // ------------------------------
-$font-family: Roboto, 'Helvetica Neue', sans-serif !default;
+$font-family: RobotoDraft, Roboto, 'Helvetica Neue', sans-serif !default;
 $font-size:   10px;
 
 $display-4-font-size-base: rem(11.20) !default;
@@ -88,12 +88,6 @@ $swift-ease-in-out-duration: 0.5s !default;
 $swift-ease-in-out-timing-function: cubic-bezier(0.35, 0, 0.25, 1) !default;
 $swift-ease-in-out: all $swift-ease-in-out-duration $swift-ease-in-out-timing-function !default;
 
-// Fab Buttons (shared between buttons.scss and fab*.scss)
-// -------------------------------------------
-$button-fab-width: rem(5.600) !default;
-$button-fab-height: rem(5.600) !default;
-$button-fab-padding: rem(1.60) !default;
-
 @mixin margin-selectors($before:1em, $after:1em, $start:0px, $end:0px) {
   -webkit-margin-before: $before;
   -webkit-margin-after: $after;
@@ -133,23 +127,6 @@ $button-fab-padding: rem(1.60) !default;
 
 @mixin md-shadow-bottom-z-2() {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.4);
-}
-
-// Mixin for a "flat" input that can be used for components that contain an input
-// (datepicker, autocomplete).
-@mixin md-flat-input() {
-  font-size: 14px;
-
-  box-sizing: border-box;
-  border: none;
-  box-shadow: none;
-  outline: none;
-  background: transparent;
-
-  // The the "clear X" that IE adds to input[type="search"]
-  &::-ms-clear {
-    display: none;
-  }
 }
 
 // Typography mixins
@@ -197,49 +174,12 @@ $button-fab-padding: rem(1.60) !default;
 }
 
 
-// mixin definition ; sets LTR and RTL within the same style call
-// @see https://css-tricks.com/almanac/properties/d/direction/
-
+/* mixin definition ; sets LTR and RTL within the same style call */
 @mixin rtl($prop, $value, $rtl-value) {
   #{$prop}: $value;
-
   html[dir=rtl] & {
     #{$prop}: $rtl-value;
-    unicode-bidi: embed;
   }
-  body[dir=rtl] & {
-    #{$prop}: $rtl-value;
-    unicode-bidi: embed;
-  }
-
-  bdo[dir=rtl] {
-    direction: rtl;
-    unicode-bidi: bidi-override;
-  }
-  bdo[dir=ltr] {
-    direction: ltr;
-    unicode-bidi: bidi-override;
-  }
-
-
-}
-
-// Position a FAB button.
-@mixin fab-position($spot, $top: auto, $right: auto, $bottom: auto, $left: auto) {
-  &.md-fab-#{$spot} {
-    top: $top;
-    right: $right;
-    bottom: $bottom;
-    left: $left;
-    position: absolute;
-  }
-}
-
-@mixin fab-all-positions() {
-  @include fab-position(bottom-right, auto, ($button-fab-width - $button-fab-padding)/2, ($button-fab-height - $button-fab-padding)/2, auto);
-  @include fab-position(bottom-left, auto, auto, ($button-fab-height - $button-fab-padding)/2, ($button-fab-width - $button-fab-padding)/2);
-  @include fab-position(top-right, ($button-fab-height - $button-fab-padding)/2, ($button-fab-width - $button-fab-padding)/2, auto, auto);
-  @include fab-position(top-left, ($button-fab-height - $button-fab-padding)/2, auto, auto, ($button-fab-width - $button-fab-padding)/2);
 }
 
 html, body {
@@ -358,13 +298,16 @@ input {
 
 .md-ripple {
   position: absolute;
-  transform: translate(-50%, -50%) scale(0);
+  transform: scale(0);
   transform-origin: 50% 50%;
   opacity: 0;
   border-radius: 50%;
   &.md-ripple-placed {
-    $sizeDuration: 0.45s * 2;
-    transition: margin $sizeDuration $swift-ease-out-timing-function,
+    $positionDuration: 0.9s * 2;
+    $sizeDuration: 0.65s * 2;
+    transition: left $positionDuration $swift-ease-out-timing-function,
+                top $positionDuration $swift-ease-out-timing-function,
+                margin $sizeDuration $swift-ease-out-timing-function,
                 border $sizeDuration $swift-ease-out-timing-function,
                 width $sizeDuration $swift-ease-out-timing-function,
                 height $sizeDuration $swift-ease-out-timing-function,
@@ -372,7 +315,7 @@ input {
                 transform $sizeDuration $swift-ease-out-timing-function;
   }
   &.md-ripple-scaled {
-    transform: translate(-50%, -50%) scale(1);
+    transform: scale(1);
   }
   &.md-ripple-active, &.md-ripple-full, &.md-ripple-visible {
     opacity: 0.20;
@@ -977,11 +920,19 @@ md-autocomplete {
     }
   }
   input:not(.md-input) {
-    @include md-flat-input();
     width: 100%;
+    box-sizing: border-box;
+    border: none;
+    box-shadow: none;
     padding: 0 15px;
+    font-size: 14px;
     line-height: 40px;
     height: 40px;
+    outline: none;
+    background: transparent;
+    &::-ms-clear {
+      display: none;
+    }
   }
   button {
     position: relative;
@@ -1092,49 +1043,6 @@ md-autocomplete {
     border: 1px solid #fff;
   }
 }
-
-md-backdrop {
-  z-index: $z-index-backdrop;
-  &.md-menu-backdrop {
-    z-index: $z-index-menu - 1;
-  }
-  &.md-select-backdrop {
-    z-index: $z-index-dialog + 1;
-    transition-duration: 0;
-  }
-  &.md-dialog-backdrop {
-    z-index: $z-index-dialog - 1;
-  }
-  &.md-bottom-sheet-backdrop {
-    z-index: $z-index-bottom-sheet - 1;
-  }
-  &.md-sidenav-backdrop {
-    z-index: $z-index-sidenav - 1;
-  }
-
-  opacity: 1;
-
-  // - Animate background-color alpha only for `.md-opaque` stylings
-  // !!Important - Theme-based Background-color and animations can be enabled in backdrop-theme.scss
-
-  transition: background-color 450ms $swift-ease-in-timing-function;
-
-  position: absolute;
-  top:0;
-  bottom:0;
-  left: 0;
-  right: 0;
-
-  &.md-click-catcher {
-    position: absolute;
-  }
-
-  &.md-opaque.ng-leave {
-    transition: background-color 400ms linear;
-  }
-
-}
-
 
 $bottom-sheet-horizontal-padding: 2 * $baseline-grid !default;
 $bottom-sheet-vertical-padding: 1 * $baseline-grid !default;
@@ -1322,17 +1230,16 @@ md-bottom-sheet {
   }
 }
 
-$button-border-radius: 3px !default;
-$button-fab-border-radius: 50% !default;
-$button-icon-border-radius: $button-fab-border-radius;
-
 $button-line-height: rem(3.60) !default;
 $button-padding: 0 rem(0.600) !default;
 $button-margin: rem(0.600) rem(0.800) !default;
 $button-min-width: rem(8.800) !default;
 
 // Fab buttons
+$button-fab-width: rem(5.600) !default;
+$button-fab-height: rem(5.600) !default;
 $button-fab-line-height: rem(5.600) !default;
+$button-fab-padding: rem(1.60) !default;
 $button-fab-mini-width: rem(4.00) !default;
 $button-fab-mini-height: rem(4.00) !default;
 $button-fab-mini-line-height: rem(4.00) !default;
@@ -1343,8 +1250,20 @@ $icon-button-height: rem(4.800) !default;
 $icon-button-width: rem(4.800) !default;
 $icon-button-margin: rem(0.600) !default;
 
+/**
+ * Position a FAB button.
+ */
+@mixin fab-position($spot, $top: auto, $right: auto, $bottom: auto, $left: auto) {
+  &.md-fab-#{$spot} {
+    top: $top;
+    right: $right;
+    bottom: $bottom;
+    left: $left;
+    position: absolute;
+  }
+}
+
 .md-button {
-  border-radius: $button-border-radius;
   box-sizing: border-box;
   color: currentColor;
 
@@ -1381,6 +1300,11 @@ $icon-button-margin: rem(0.600) !default;
   transition: box-shadow $swift-ease-out-duration $swift-ease-out-timing-function,
               background-color $swift-ease-out-duration $swift-ease-out-timing-function;
 
+  *,
+  *:before,
+  *:after {
+    box-sizing: border-box;
+  }
   &:focus {
     outline: none;
   }
@@ -1416,9 +1340,9 @@ $icon-button-margin: rem(0.600) !default;
     padding-left: 0;
     padding-right: 0;
     width: $icon-button-width;
-    border-radius: $button-icon-border-radius;
+    border-radius: 50%;
     .md-ripple-container {
-      border-radius: $button-icon-border-radius;
+      border-radius: 50%;
       background-clip: padding-box;
       overflow: hidden;
       // The following hack causes Safari/Chrome to respect overflow hidden for ripples
@@ -1428,8 +1352,10 @@ $icon-button-margin: rem(0.600) !default;
 
   &.md-fab {
 
-    // Include the top/left/bottom/right fab positions
-    @include fab-all-positions();
+    @include fab-position(bottom-right, auto, ($button-fab-width - $button-fab-padding)/2, ($button-fab-height - $button-fab-padding)/2, auto);
+    @include fab-position(bottom-left, auto, auto, ($button-fab-height - $button-fab-padding)/2, ($button-fab-width - $button-fab-padding)/2);
+    @include fab-position(top-right, ($button-fab-height - $button-fab-padding)/2, ($button-fab-width - $button-fab-padding)/2, auto, auto);
+    @include fab-position(top-left, ($button-fab-height - $button-fab-padding)/2, auto, auto, ($button-fab-width - $button-fab-padding)/2);
 
     z-index: $z-index-fab;
 
@@ -1440,14 +1366,14 @@ $icon-button-margin: rem(0.600) !default;
     vertical-align: middle;
 
     @include md-shadow-bottom-z-1();
-    border-radius: $button-fab-border-radius;
+    border-radius: 50%;
     background-clip: padding-box;
     overflow: hidden;
 
     transition: 0.2s linear;
     transition-property: background-color, box-shadow;
     .md-ripple-container {
-      border-radius: $button-fab-border-radius;
+      border-radius: 50%;
       background-clip: padding-box;
       overflow: hidden;
       // The following hack causes Safari/Chrome to respect overflow hidden for ripples
@@ -1473,14 +1399,6 @@ $icon-button-margin: rem(0.600) !default;
       }
     }
   }
-
-  .md-ripple-container {
-    border-radius: $button-border-radius;
-    background-clip: padding-box;
-    overflow: hidden;
-    // The following hack causes Safari/Chrome to respect overflow hidden for ripples
-    -webkit-mask-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC');
-  }
 }
 
 .md-toast-open-top {
@@ -1495,7 +1413,6 @@ $icon-button-margin: rem(0.600) !default;
     }
   }
 }
-
 .md-toast-open-bottom {
   .md-button.md-fab-bottom-left,
   .md-button.md-fab-bottom-right {
@@ -1514,7 +1431,6 @@ $icon-button-margin: rem(0.600) !default;
   flex: 1;
   width: 100%;
 }
-
 .md-button-group > .md-button {
   flex: 1;
 
@@ -1610,6 +1526,12 @@ md-checkbox {
   min-width: $checkbox-width;
   min-height: $checkbox-width;
 
+  *,
+  *:before,
+  *:after {
+    box-sizing: border-box;
+  }
+
   &.md-focused:not([disabled]) {
     .md-container:before {
       left: -8px;
@@ -1629,17 +1551,13 @@ md-checkbox {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-
-    box-sizing: border-box;
     display: inline-block;
-
     width: $checkbox-width;
     height: $checkbox-height;
     @include rtl(left, 0, auto);
     @include rtl(right, auto, 0);
 
     &:before {
-      box-sizing: border-box;
       background-color: transparent;
       border-radius: 50%;
       content: '';
@@ -1655,7 +1573,6 @@ md-checkbox {
     }
 
     &:after {
-      box-sizing: border-box;
       content: '';
       position: absolute;
       top: -10px;
@@ -1682,7 +1599,6 @@ md-checkbox {
 
   // unchecked
   .md-icon {
-    box-sizing: border-box;
     transition: 240ms;
     position: absolute;
     top: 0;
@@ -1705,7 +1621,6 @@ md-checkbox {
 
 
   &.md-checked .md-icon:after {
-    box-sizing: border-box;
     transform: rotate(45deg);
     position: absolute;
     left: $checkbox-width / 3;
@@ -1721,7 +1636,6 @@ md-checkbox {
   }
 
   .md-label {
-    box-sizing: border-box;
     position: relative;
     display: inline-block;
     vertical-align: middle;
@@ -1734,11 +1648,53 @@ md-checkbox {
   }
 }
 
-$chip-font-size: rem(1.6) !default;
+md-backdrop {
+  z-index: $z-index-backdrop;
+  &.md-menu-backdrop {
+    z-index: $z-index-menu - 1;
+  }
+  &.md-select-backdrop {
+    z-index: $z-index-dialog + 1;
+  }
+  &.md-dialog-backdrop {
+    z-index: $z-index-dialog - 1;
+  }
+  &.md-bottom-sheet-backdrop {
+    z-index: $z-index-bottom-sheet - 1;
+  }
+  &.md-sidenav-backdrop {
+    z-index: $z-index-sidenav - 1;
+  }
+
+  opacity: 1;
+
+  // - Animate background-color alpha only for `.md-opaque` stylings
+  // !!Important - Theme-based Background-color and animations can be enabled in backdrop-theme.scss
+
+  transition: background-color 450ms $swift-ease-in-timing-function;
+
+  position: absolute;
+  top:0;
+  bottom:0;
+  left: 0;
+  right: 0;
+
+  &.md-click-catcher {
+    position: absolute;
+  }
+
+  &.md-opaque.ng-leave {
+    transition: background-color 400ms linear;
+  }
+
+}
+
+
+$chip-font-size: rem(1.3) !default;
 $chip-height: rem(3.2) !default;
 $chip-padding: 0 rem(0.8) 0 rem(1.2) !default;
 $chip-margin: rem(0.8) rem(0.8) 0 0 !default;
-$chip-wrap-padding: 0 0 rem(0.8) rem(0.3) !default;
+$chip-wrap-padding: 0 0 rem(0.8) 0 !default;
 $chip-delete-icon-size: rem(1.8) !default;
 $contact-chip-padding: 0 rem(0.8) 0 0 !default;
 $contact-chip-suggestion-image-height: rem(4.0) !default;
@@ -1791,10 +1747,7 @@ $contact-chip-name-width: rem(12) !default;
   font-size: $chip-font-size;
   padding: $chip-wrap-padding;
   vertical-align: middle;
-
-  &:not('.md-readonly') {
-    cursor: text;
-  }
+  cursor: text;
   .md-chip {
     cursor: default;
     border-radius: $chip-height / 2;
@@ -1943,314 +1896,6 @@ md-content {
 
 
 
-/** Styles for mdCalendar. */
-$md-calendar-cell-size: 44px !default;
-$md-calendar-header-height: 40px;
-$md-calendar-cell-emphasis-size: 40px !default;
-$md-calendar-side-padding: 16px !default;
-$md-calendar-weeks-to-show: 7 !default;
-
-$md-calendar-month-label-padding: 8px !default;
-$md-calendar-month-label-font-size: 13px !default;
-
-$md-calendar-width: (7 * $md-calendar-cell-size) + (2 * $md-calendar-side-padding);
-$md-calendar-height:
-    ($md-calendar-weeks-to-show * $md-calendar-cell-size) + $md-calendar-header-height;
-
-
-// Styles for date cells, including day-of-the-week header cells.
-@mixin md-calendar-cell() {
-  height: $md-calendar-cell-size;
-  width: $md-calendar-cell-size;
-
-  text-align: center;
-
-  // Remove all padding and borders so we can completely
-  // control the size of the table cells.
-  padding: 0;
-  border: none;
-
-  // The left / right padding is applied to the cells instead of the wrapper
-  // because we want the header background and the month dividing border to
-  // extend the entire width of the calendar.
-  &:first-child {
-    padding-left: $md-calendar-side-padding;
-  }
-
-  &:last-child {
-    padding-right: $md-calendar-side-padding;
-  }
-}
-
-// Styles for tables used in mdCalendar (the day-of-the-week header and the table of dates itself).
-@mixin md-calendar-table() {
-  // Fixed table layout makes IE faster.
-  // https://msdn.microsoft.com/en-us/library/ms533020(VS.85).aspx
-  table-layout: fixed;
-  border-spacing: 0;
-  border-collapse: collapse;
-}
-
-md-calendar {
-  font-size: 13px;
-  user-select: none;
-}
-
-// Wrap the scroll with overflow: hidden in order to hide the scrollbar.
-// The inner .md-calendar-scroll-container will using a padding-right to push the
-// scrollbar into the hidden area (done with javascript).
-.md-calendar-scroll-mask {
-  display: inline-block;
-  overflow: hidden;
-  height: $md-calendar-weeks-to-show * $md-calendar-cell-size;
-
-  // The actual scrolling element.
-  .md-virtual-repeat-scroller {
-    // These two properties are needed to get touch momentum to work.
-    // See https://css-tricks.com/snippets/css/momentum-scrolling-on-ios-overflow-elements
-    overflow-y: scroll;
-    -webkit-overflow-scrolling: touch;
-
-    &::-webkit-scrollbar {
-      display: none;
-    }
-  }
-
-  // Offsetter is the element that is translateY'ed into view of the user and contains the
-  // calendar content.
-  .md-virtual-repeat-offsetter {
-    width: 100%;
-  }
-}
-
-// Contains the scrolling element (this is the md-virtual-repeat-container).
-.md-calendar-scroll-container {
-  display: inline-block;
-  height: $md-calendar-weeks-to-show * $md-calendar-cell-size;
-  width: $md-calendar-width;
-}
-
-// A single date cell in the calendar table.
-.md-calendar-date {
-  @include md-calendar-cell();
-}
-
-// Circle element inside of every date cell used to indicate selection or focus.
-.md-calendar-date-selection-indicator {
-  transition: background-color, color $swift-ease-out-duration $swift-ease-out-timing-function;
-
-  border-radius: 50%;
-  display: inline-block;
-
-  cursor: pointer;
-
-  width: $md-calendar-cell-emphasis-size;
-  height: $md-calendar-cell-emphasis-size;
-  line-height: $md-calendar-cell-emphasis-size;
-}
-
-// The label above each month (containing the month name and the year, e.g. "Jun 2014").
-.md-calendar-month-label {
-  height: $md-calendar-cell-size;
-  font-size: $md-calendar-month-label-font-size;
-  padding: 0 0 0 $md-calendar-side-padding + $md-calendar-month-label-padding;
-}
-
-// Table containing the day-of-the-week header.
-.md-calendar-day-header {
-  @include md-calendar-table();
-
-  th {
-    @include md-calendar-cell();
-    font-weight: normal;
-    height: $md-calendar-header-height;
-  }
-}
-
-// Primary table containing all date cells. Each month is a tbody in this table.
-.md-calendar {
-  @include md-calendar-table();
-
-  // Divider between months.
-  tr:last-child td {
-    border-bottom-width: 1px;
-    border-bottom-style: solid;
-  }
-
-  // The divider between months doesn't actually change the height of the tbody in which the
-  // border appear; it changes the height of the following tbody. The causes the first-child to be
-  // 1px shorter than the other months. We fix this by adding an invisible border-top.
-  &:first-child {
-    border-top: 1px solid transparent;
-  }
-}
-
-/** Styles for mdDatepicker. */
-$md-datepicker-button-gap: 12px;  // Space between the text input and the calendar-icon button.
-$md-datepicker-border-bottom-gap: 5px;  // Space between input and the grey underline.
-$md-datepicker-open-animation-duration: 0.2s;
-
-md-datepicker {
-  // Don't let linebreaks happen between the open icon-button and the input.
-  white-space: nowrap;
-}
-
-// The calendar icon button used to open the calendar pane.
-// Need absurd specificty to override md-button.md-icon-button.
-.md-datepicker-button {
-  display: inline-block;
-  box-sizing: border-box;
-  background: none;
-}
-
-// The input into which the user can type the date.
-.md-datepicker-input {
-  @include md-flat-input();
-  min-width: 120px;
-  max-width: $md-calendar-width - $md-datepicker-button-gap;
-}
-
-// Container for the datepicker input.
-.md-datepicker-input-container {
-  // Position relative in order to absolutely position the down-triangle button within.
-  position: relative;
-
-  padding-bottom: $md-datepicker-border-bottom-gap;
-  border-bottom-width: 1px;
-  border-bottom-style: solid;
-
-  display: inline-block;
-  width: auto;
-  margin-left: $md-datepicker-button-gap;
-
-  &.md-datepicker-focused {
-    border-bottom-width: 2px;
-  }
-}
-
-
-// Floating pane that contains the calendar at the bottom of the input.
-.md-datepicker-calendar-pane {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: $z-index-menu;
-
-  border-width: 1px;
-  border-style: solid;
-  background: transparent;
-
-  transform: scale(0);
-  transform-origin: 0 0;
-  transition: transform $md-datepicker-open-animation-duration $swift-ease-out-timing-function;
-
-  &.md-pane-open {
-    transform: scale(1);
-  }
-}
-
-// Portion of the floating panel that sits, invisibly, on top of the input.
-.md-datepicker-input-mask {
-  height: 40px;
-  width: $md-calendar-width;
-  position: relative;
-
-  background: transparent;
-  pointer-events: none;
-  cursor: text;
-}
-
-.md-datepicker-input-mask-opaque {
-  position: absolute;
-  right: 0;
-  left: 120px;
-  background: white;
-
-  height: 100%;
-}
-
-// The calendar portion of the floating pane (vs. the input mask).
-.md-datepicker-calendar {
-  opacity: 0;
-  // Use a modified timing function (from swift-ease-out) so that the opacity part of the
-  // animation doesn't come in as quickly so that the floating pane doesn't ever seem to
-  // cover up the trigger input.
-  transition: opacity $md-datepicker-open-animation-duration cubic-bezier(0.5, 0, 0.25, 1);
-
-  .md-pane-open & {
-    opacity: 1;
-  }
-
-  md-calendar:focus {
-    outline: none;
-  }
-}
-
-// Down triangle/arrow indicating that the datepicker can be opened.
-// We can do this entirely with CSS without needing to load an icon.
-// See https://css-tricks.com/snippets/css/css-triangle/
-$md-date-arrow-size: 5px;
-.md-datepicker-expand-triangle {
-  // Center the triangle inside of the button so that the
-  // ink ripple origin looks correct.
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-
-  width: 0;
-  height: 0;
-  border-left: $md-date-arrow-size solid transparent;
-  border-right: $md-date-arrow-size solid transparent;
-  border-top: $md-date-arrow-size solid rgba(black, 0.20);
-}
-
-// Button containing the down "disclosure" triangle/arrow.
-.md-datepicker-triangle-button {
-  position: absolute;
-  right: 0;
-  top: 0;
-
-  // TODO(jelbourn): This position isn't great on all platforms.
-  transform: translateY(-25%) translateX(45%);
-}
-
-// Need crazy specificity to override .md-button.md-icon-button.
-// Only apply this high specifiy to the property we need to override.
-.md-datepicker-triangle-button.md-button.md-icon-button {
-  height: 100%;
-  width: 36px;
-  position: absolute;
-}
-
-// Disabled state for all elements of the picker.
-md-datepicker[disabled] {
-  .md-datepicker-input-container {
-    border-bottom-color: transparent;
-  }
-
-  .md-datepicker-triangle-button {
-    display: none;
-  }
-}
-
-// Open state for all of the elements of the picker.
-.md-datepicker-open {
-  .md-datepicker-input-container {
-    margin-left: -$md-datepicker-button-gap;
-    border: none;
-  }
-
-  .md-datepicker-input {
-    margin-left: 24px;
-    height: 40px;
-  }
-
-  .md-datepicker-triangle-button {
-    display: none;
-  }
-}
-
 $dialog-padding: $baseline-grid * 3;
 
 .md-dialog-is-showing {
@@ -2329,10 +1974,6 @@ md-dialog {
         padding-top: 0;
       }
     }
-
-    .md-dialog-content-body {
-      width:100%;
-    }
   }
 
   .md-actions {
@@ -2383,9 +2024,6 @@ md-fab-speed-dial {
   display: flex;
   align-items: center;
 
-  // Include the top/left/bottom/right fab positions
-  @include fab-all-positions();
-
   .md-css-variables {
     z-index: $z-index-fab;
   }
@@ -2401,7 +2039,7 @@ md-fab-speed-dial {
     display: flex;
 
     // Set the height so that the z-index in the JS animation works
-    height: auto;
+    height: initial;
 
     .md-fab-action-item {
       visibility: hidden;
@@ -2484,139 +2122,14 @@ md-fab-speed-dial {
   }
 }
 
-$button-fab-width: rem(5.600) !default;
-$icon-button-margin: rem(0.600) !default;
-
-md-fab-toolbar {
-  $icon-delay: 200ms;
-
-  // Include the top/left/bottom/right fab positions
-  @include fab-all-positions();
-
-  display: block;
-
-  /*
-   * Closed styling
-   */
-  .md-fab-toolbar-wrapper {
-    display: block;
-    position: relative;
-    overflow: hidden;
-
-    // Account for the size of the trigger plus it's margin/shadow
-    height: $button-fab-width + ($icon-button-margin * 2);
-  }
-
-  md-fab-trigger {
-    position: absolute;
-    z-index: $z-index-fab;
-
-    button {
-      overflow: visible !important;
-    }
-
-    .md-fab-toolbar-background {
-      display: block;
-      position: absolute;
-      z-index: $z-index-fab + 1;
-
-      opacity: 1;
-      transition: $swift-ease-in;
-    }
-
-    md-icon {
-      position: relative;
-      z-index: $z-index-fab + 2;
-
-      opacity: 1;
-
-      // Hide the icon very quickly
-      transition: all $icon-delay ease-in;
-    }
-  }
-
-  &.md-left {
-    md-fab-trigger {
-      right: 0;
-    }
-
-    .md-toolbar-tools {
-      flex-direction: row-reverse;
-
-      > .md-button:first-child {
-        margin-right: 0.6rem;
-      }
-
-      > .md-button:first-child {
-        margin-left: -0.8rem;
-      }
-
-
-      > .md-button:last-child {
-        margin-right: 8px;
-      }
-
-    }
-  }
-
-  &.md-right {
-    md-fab-trigger {
-      left: 0;
-    }
-
-    .md-toolbar-tools {
-      flex-direction: row;
-    }
-  }
-
-  md-toolbar {
-    background-color: transparent !important;
-    pointer-events: none;
-    z-index: $z-index-fab + 3;
-
-    .md-toolbar-tools {
-      // Fix some spacing issues with the icons and the trigger
-      padding: 0 20px;
-      margin-top: 3px;
-    }
-
-    .md-fab-action-item {
-      opacity: 0;
-      transform: scale(0);
-      transition: $swift-ease-in;
-
-      // Cut the action item's animation time in half since we delay it in the JS
-      transition-duration: $swift-ease-in-duration / 2;
-    }
-  }
-
-  /*
-   * Hover styling
-   */
-  &.md-is-open {
-    md-fab-trigger > button {
-      box-shadow: none;
-
-      md-icon {
-        opacity: 0;
-      }
-    }
-
-    .md-fab-action-item {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-}
 md-grid-list {
   box-sizing: border-box;
   display: block;
   position: relative;
 
-  md-grid-tile,
-  md-grid-tile > figure,
-  md-grid-tile-header,
-  md-grid-tile-footer {
+  *,
+  *:before,
+  *:after {
     box-sizing: border-box;
   }
 
@@ -2690,6 +2203,123 @@ md-grid-list {
 }
 
 
+md-fab-toolbar {
+  $icon-delay: 200ms;
+
+  display: block;
+
+  /*
+   * Closed styling
+   */
+  .md-fab-toolbar-wrapper {
+    display: block;
+    position: relative;
+    overflow: hidden;
+
+    // Account for the size of the trigger (5.6rem) plus it's margin/shadow (0.6rem * 2)
+    height: 6.8rem;
+  }
+
+  md-fab-trigger {
+    position: absolute;
+    z-index: $z-index-fab;
+
+    button {
+      overflow: visible !important;
+    }
+
+    .md-fab-toolbar-background {
+      display: block;
+      position: absolute;
+      z-index: $z-index-fab + 1;
+
+      opacity: 1;
+      transition: $swift-ease-in;
+    }
+
+    md-icon {
+      position: relative;
+      z-index: $z-index-fab + 2;
+
+      opacity: 1;
+
+      // Hide the icon very quickly
+      transition: all $icon-delay ease-in;
+    }
+  }
+
+  &.md-left {
+    md-fab-trigger {
+      left: 0;
+    }
+
+    .md-toolbar-tools {
+      flex-direction: row;
+    }
+  }
+
+  &.md-right {
+    md-fab-trigger {
+      right: 0;
+    }
+
+    .md-toolbar-tools {
+      flex-direction: row-reverse;
+
+      > .md-button:first-child {
+        margin-left: 0.6rem;
+      }
+
+      > .md-button:first-child {
+        margin-right: -0.8rem;
+      }
+
+
+      > .md-button:last-child {
+        margin-right: 8px;
+      }
+
+    }
+  }
+
+  md-toolbar {
+    background-color: transparent !important;
+    z-index: $z-index-fab + 3;
+
+    .md-toolbar-tools {
+      // Fix some spacing issues with the icons and the trigger
+      padding: 0 20px;
+      margin-top: 3px;
+    }
+
+    .md-fab-action-item {
+      opacity: 0;
+      transform: scale(0);
+      transition: $swift-ease-in;
+
+      // Cut the action item's animation time in half since we delay it in the JS
+      transition-duration: $swift-ease-in-duration / 2;
+    }
+  }
+
+  /*
+   * Hover styling
+   */
+  &.md-is-open {
+    md-fab-trigger > button {
+      box-shadow: none;
+
+      md-icon {
+        opacity: 0;
+      }
+    }
+
+    .md-fab-action-item {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}
 $icon-size: rem(2.4);
 
 md-icon {
@@ -2746,6 +2376,408 @@ md-icon {
 //  -webkit-font-smoothing:antialiased;
 //  -moz-osx-font-smoothing:grayscale;
 //}
+
+$list-h3-margin: 0 0 6px 0 !default;
+$list-h4-margin: 10px 0 5px 0 !default;
+$list-h4-font-weight: 400 !default;
+$list-header-line-height: 0.75em !default;
+$list-p-margin: 0 0 0 0 !default;
+$list-p-line-height: 1.6em !default;
+
+$list-padding-top: $baseline-grid !default;
+$list-padding-right: 0px !default;
+$list-padding-left: 0px !default;
+$list-padding-bottom: $baseline-grid !default;
+
+$item-padding-top: 0px !default;
+$item-padding-right: 0px !default;
+$item-padding-left: 0px !default;
+$item-padding-bottom: 0px !default;
+$list-item-padding-vertical: 0px !default;
+$list-item-padding-horizontal: $baseline-grid * 2 !default;
+$list-item-primary-width: $baseline-grid * 7 !default;
+$list-item-primary-avatar-width: $baseline-grid * 5 !default;
+$list-item-primary-icon-width: $baseline-grid * 3 !default;
+$list-item-secondary-left-margin: $baseline-grid * 2 !default;
+$list-item-secondary-button-width: $baseline-grid * 6 !default;
+$list-item-text-padding-top: $baseline-grid * 2 !default;
+$list-item-text-padding-bottom: $baseline-grid * 2.5 !default;
+$list-item-inset-divider-offset: 12 * $baseline-grid !default;
+
+md-list {
+  display: block;
+  padding: $list-padding-top $list-padding-right $list-padding-bottom $list-padding-left;
+
+  .md-subheader {
+    font-size: $body-font-size-base;
+    font-weight: 500;
+    letter-spacing: 0.010em;
+    line-height: $list-header-line-height;
+  }
+}
+
+md-list-item {
+  &.md-proxy-focus.md-focused .md-no-style {
+    transition: background-color 0.15s linear;
+  }
+  &.md-no-proxy,
+  .md-no-style {
+    position: relative;
+    padding: $list-item-padding-vertical $list-item-padding-horizontal;
+    flex: 1;
+    
+    &.md-button {
+      font-size: inherit;
+      height: inherit;
+      text-align: left;
+      text-transform: none;
+      width: 100%;
+      white-space: normal;
+      flex-direction: inherit;
+      align-items: inherit;
+    }
+    &:focus {
+      outline: none
+    }
+  }
+  &.md-with-secondary {
+    position: relative;
+  }
+  &.md-clickable:hover {
+    cursor: pointer;
+  }
+
+  md-divider {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    &[md-inset] {
+      left: $list-item-inset-divider-offset;
+      width: calc(100% - #{$list-item-inset-divider-offset});
+      margin: 0;
+    }
+  }
+}
+
+md-list-item, md-list-item .md-list-item-inner {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  min-height: 48px;
+
+  // Layout for controls in primary or secondary divs, or auto-infered first child
+  & > div.md-primary > md-icon,
+  & > div.md-secondary > md-icon,
+  & > md-icon:first-child, 
+  > md-icon.md-secondary {
+    width: $list-item-primary-icon-width;
+    margin-top: 16px;
+    margin-bottom: 12px;
+    box-sizing: content-box;
+  }
+  & > div.md-primary > md-checkbox,
+  & > div.md-secondary > md-checkbox,
+  & > md-checkbox:first-child,
+  md-checkbox.md-secondary {
+    align-self: center;
+    .md-label { display: none; }
+  }
+
+  & > md-icon:first-child {
+    margin-right: $list-item-primary-width - $list-item-primary-icon-width;
+  }
+  & > md-checkbox:first-child {
+    width: 3 * $baseline-grid;
+    margin-left: 3px;
+    margin-right: 29px;
+  }
+  & > .md-avatar:first-child {
+    width: $list-item-primary-avatar-width;
+    height: $list-item-primary-avatar-width;
+    margin-top: $baseline-grid;
+    margin-bottom: $baseline-grid;
+    margin-right: $list-item-primary-width - $list-item-primary-avatar-width;
+    border-radius: 50%;
+    box-sizing: content-box;
+  }
+
+  md-checkbox.md-secondary,
+  md-switch.md-secondary {
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  button.md-button.md-secondary-container {
+    background-color: transparent;
+    align-self: center;
+    border-radius: 50%;
+    margin: 0px;
+    min-width: 0px;
+    .md-ripple,
+    .md-ripple-container {
+      border-radius: 50%;
+    }
+  }
+
+  .md-secondary-container,
+  .md-secondary {
+    margin-left: $list-item-secondary-left-margin;
+    position: absolute;
+    right: $list-item-padding-horizontal;
+    top: 50%;
+    transform: translate3d(0, -50%, 0);
+  }
+
+  & > .md-button.md-secondary-container > .md-secondary {
+    margin-left: 0px;
+    position: static;
+  }
+
+  & > p, & > .md-list-item-inner > p {
+    flex: 1;
+    margin: 0;
+  }
+}
+
+
+md-list-item.md-2-line,
+md-list-item.md-2-line > .md-no-style,
+md-list-item.md-3-line,
+md-list-item.md-3-line > .md-no-style {
+  align-items: flex-start;
+
+  .md-list-item-text {
+    flex: 1;
+    padding: $baseline-grid * 2 0;
+    text-overflow: ellipsis;
+
+    &.md-offset {
+      margin-left: $list-item-primary-width;
+    }
+
+    h3 {
+      font-size: $subhead-font-size-base;
+      font-weight: 400;
+      letter-spacing: 0.010em;
+      margin: $list-h3-margin;
+      line-height: $list-header-line-height;
+    }
+    h4 {
+      font-size: $body-font-size-base;
+      letter-spacing: 0.010em;
+      margin: $list-h4-margin;
+      font-weight: $list-h4-font-weight;
+      line-height: $list-header-line-height;
+    }
+    p {
+      font-size: $body-font-size-base;
+      font-weight: 500;
+      letter-spacing: 0.010em;
+      margin: $list-p-margin;
+      line-height: $list-p-line-height;
+    }
+  }
+}
+
+md-list-item.md-2-line,
+md-list-item.md-2-line > .md-no-style {
+  > .md-avatar:first-child {
+    margin-top: $baseline-grid * 1.5;
+  }
+  > md-icon:first-child {
+    align-self: flex-start;
+  }
+  .md-list-item-text {
+    flex: 1;
+    padding-top: ($baseline-grid * 2.5) - 1;
+  }
+}
+
+md-list-item.md-3-line,
+md-list-item.md-3-line > .md-no-style {
+  > md-icon:first-child, 
+  > .md-avatar:first-child {
+    margin-top: $baseline-grid * 2;
+  }
+}
+
+$progress-circular-ease-in-out : cubic-bezier(0.35, 0, 0.25, 1) !default;
+$progress-circular-duration : 5.25s !default;
+$progress-circular-circle-duration : $progress-circular-duration * 0.25 !default;
+$progress-circular-outer-duration : $progress-circular-duration * (5 / 9) !default;
+$progress-circular-sporadic-duration : $progress-circular-duration !default;
+$progress-circular-size : 50px !default;
+
+@keyframes outer-rotate {
+  100% { transform: rotate(360deg); }
+}
+@keyframes left-wobble {
+  0%, 100% { transform: rotate(130deg); }
+  50% { transform: rotate( -5deg); }
+}
+@keyframes right-wobble {
+  0%, 100% { transform: rotate(-130deg); }
+  50% { transform: rotate(   5deg); }
+}
+@keyframes sporadic-rotate {
+  12.5% { transform: rotate( 135deg); }
+  25% { transform: rotate( 270deg); }
+  37.5% { transform: rotate( 405deg); }
+  50% { transform: rotate( 540deg); }
+  62.5% { transform: rotate( 675deg); }
+  75% { transform: rotate( 810deg); }
+  87.5% { transform: rotate( 945deg); }
+  100% { transform: rotate(1080deg); }
+}
+
+md-progress-circular {
+  width: $progress-circular-size;
+  height: $progress-circular-size;
+  display: block;
+  position: relative;
+  padding-top: 0 !important;
+  margin-bottom: 0 !important;
+  overflow: hidden;
+  .md-inner {
+    width: $progress-circular-size;
+    height: $progress-circular-size;
+    position: relative;
+    .md-gap {
+      position: absolute;
+      left: $progress-circular-size * 0.5 - 1;
+      right: $progress-circular-size * 0.5 - 1;
+      top: 0;
+      bottom: 0;
+      border-top-width: 5px;
+      border-top-style: solid;
+      box-sizing: border-box;
+    }
+    .md-left, .md-right {
+      position: absolute;
+      top: 0;
+      height: $progress-circular-size;
+      width: $progress-circular-size * 0.5;
+      overflow: hidden;
+      .md-half-circle {
+        position: absolute;
+        top: 0;
+        width: $progress-circular-size;
+        height: $progress-circular-size;
+        box-sizing: border-box;
+        border-width: 5px;
+        border-style: solid;
+        border-bottom-color: transparent;
+        border-radius: 50%;
+      }
+    }
+    .md-left {
+      left: 0;
+      .md-half-circle {
+        left: 0;
+        border-right-color: transparent;
+      }
+    }
+    .md-right {
+      right: 0;
+      .md-half-circle {
+        right: 0;
+        border-left-color: transparent;
+      }
+    }
+  }
+
+  // TODO: This while-loop generates about 2 kilobytes of css after gzip.
+  // Refactor progressCircular to animate with javascript.
+  $i: 0;
+  @while $i <= 100 {
+    &[value="#{$i}"] {
+      .md-inner {
+        .md-left {
+          .md-half-circle {
+            @if $i <= 50 {
+              transform: rotate(135deg);
+            } @else {
+              transition: transform 0.1s linear;
+              $deg: ($i - 50) / 50 * 180 + 135;
+              transform: rotate(#{$deg}deg);
+            }
+          }
+        }
+        .md-right {
+          .md-half-circle {
+            @if $i <= 50 {
+              transition: transform 0.1s linear;
+              $deg: $i / 50 * 180 - 135;
+              transform: rotate(#{$deg}deg);
+            } @else {
+              transform: rotate(45deg);
+            }
+          }
+        }
+        .md-gap {
+          border-bottom-width: 5px;
+          border-bottom-style: solid;
+          @if $i <= 50 {
+            border-bottom-color: transparent !important;
+          } @else {
+            transition: border-bottom-color 0.1s linear;
+          }
+        }
+      }
+    }
+    $i: $i + 1;
+  }
+
+  &[md-mode=indeterminate] {
+    .md-spinner-wrapper {
+      animation: outer-rotate $progress-circular-outer-duration linear infinite;
+      .md-inner {
+        animation: sporadic-rotate $progress-circular-sporadic-duration $progress-circular-ease-in-out infinite;
+        .md-left, .md-right {
+          .md-half-circle {
+            animation-iteration-count: infinite;
+            animation-duration: ($progress-circular-duration * 0.25);
+            animation-timing-function: $progress-circular-ease-in-out;
+          }
+        }
+        .md-left {
+          .md-half-circle {
+            animation-name: left-wobble;
+          }
+        }
+        .md-right {
+          .md-half-circle {
+            animation-name: right-wobble;
+          }
+        }
+      }
+    }
+  }
+}
+
+.ng-hide md-progress-circular,
+md-progress-circular.ng-hide {
+  &[md-mode=indeterminate] {
+    .md-spinner-wrapper {
+      animation: none;
+      .md-inner {
+        animation: none;
+        .md-left {
+          .md-half-circle {
+            animation-name: none;
+          }
+        }
+        .md-right {
+          .md-half-circle {
+            animation-name: none;
+          }
+        }
+      }
+    }
+  }
+}
 
 $input-container-padding: 2px !default;
 
@@ -2987,14 +3019,12 @@ md-input-container.md-icon-float {
   > md-icon {
     top: 26px;
     left: 2px;
-    + input,
-    + textarea {
+    + input {
           margin-left: $icon-offset;
     }
   }
 
-  > input,
-  > textarea {
+  > input {
     padding-top : $input-line-height - $input-container-padding;
   }
 
@@ -3014,233 +3044,6 @@ md-input-container.md-icon-float {
 @media screen and (-ms-high-contrast: active) {
   md-input-container.md-default-theme > md-icon {
     fill: #fff;
-  }
-}
-
-$list-h3-margin: 0 0 6px 0 !default;
-$list-h4-margin: 10px 0 5px 0 !default;
-$list-h4-font-weight: 400 !default;
-$list-header-line-height: 0.75em !default;
-$list-p-margin: 0 0 0 0 !default;
-$list-p-line-height: 1.6em !default;
-
-$list-padding-top: $baseline-grid !default;
-$list-padding-right: 0px !default;
-$list-padding-left: 0px !default;
-$list-padding-bottom: $baseline-grid !default;
-
-$item-padding-top: 0px !default;
-$item-padding-right: 0px !default;
-$item-padding-left: 0px !default;
-$item-padding-bottom: 0px !default;
-$list-item-padding-vertical: 0px !default;
-$list-item-padding-horizontal: $baseline-grid * 2 !default;
-$list-item-primary-width: $baseline-grid * 7 !default;
-$list-item-primary-avatar-width: $baseline-grid * 5 !default;
-$list-item-primary-icon-width: $baseline-grid * 3 !default;
-$list-item-secondary-left-margin: $baseline-grid * 2 !default;
-$list-item-secondary-button-width: $baseline-grid * 6 !default;
-$list-item-text-padding-top: $baseline-grid * 2 !default;
-$list-item-text-padding-bottom: $baseline-grid * 2.5 !default;
-$list-item-inset-divider-offset: 12 * $baseline-grid !default;
-$list-item-height: 8 * $baseline-grid !default;
-
-md-list {
-  display: block;
-  padding: $list-padding-top $list-padding-right $list-padding-bottom $list-padding-left;
-
-  .md-subheader {
-    font-size: $body-font-size-base;
-    font-weight: 500;
-    letter-spacing: 0.010em;
-    line-height: $list-header-line-height;
-  }
-}
-
-md-list-item {
-  &.md-proxy-focus.md-focused .md-no-style {
-    transition: background-color 0.15s linear;
-  }
-  &.md-no-proxy,
-  .md-no-style {
-    position: relative;
-    padding: $list-item-padding-vertical $list-item-padding-horizontal;
-    flex: 1;
-    
-    &.md-button {
-      font-size: inherit;
-      height: inherit;
-      text-align: left;
-      text-transform: none;
-      width: 100%;
-      white-space: normal;
-      flex-direction: inherit;
-      align-items: inherit;
-    }
-    &:focus {
-      outline: none
-    }
-  }
-  &.md-with-secondary {
-    position: relative;
-  }
-  &.md-clickable:hover {
-    cursor: pointer;
-  }
-
-  md-divider {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    &[md-inset] {
-      left: $list-item-inset-divider-offset;
-      width: calc(100% - #{$list-item-inset-divider-offset});
-      margin: 0;
-    }
-  }
-}
-
-md-list-item, md-list-item .md-list-item-inner {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  min-height: $list-item-height;
-
-  // Layout for controls in primary or secondary divs, or auto-infered first child
-  & > div.md-primary > md-icon,
-  & > div.md-secondary > md-icon,
-  & > md-icon:first-child, 
-  > md-icon.md-secondary {
-    width: $list-item-primary-icon-width;
-    margin-top: 16px;
-    margin-bottom: 12px;
-    box-sizing: content-box;
-  }
-  & > div.md-primary > md-checkbox,
-  & > div.md-secondary > md-checkbox,
-  & > md-checkbox:first-child,
-  md-checkbox.md-secondary {
-    align-self: center;
-    .md-label { display: none; }
-  }
-
-  & > md-icon:first-child {
-    margin-right: $list-item-primary-width - $list-item-primary-icon-width;
-  }
-  & > md-checkbox:first-child {
-    width: 3 * $baseline-grid;
-    margin-left: 3px;
-    margin-right: 29px;
-  }
-  & > .md-avatar:first-child {
-    width: $list-item-primary-avatar-width;
-    height: $list-item-primary-avatar-width;
-    margin-top: $baseline-grid;
-    margin-bottom: $baseline-grid;
-    margin-right: $list-item-primary-width - $list-item-primary-avatar-width;
-    border-radius: 50%;
-    box-sizing: content-box;
-  }
-
-  md-checkbox.md-secondary,
-  md-switch.md-secondary {
-    margin-right: 0;
-    margin-top: 0;
-    margin-bottom: 0;
-  }
-
-  button.md-button.md-secondary-container {
-    background-color: transparent;
-    align-self: center;
-    border-radius: 50%;
-    margin: 0px;
-    min-width: 0px;
-    .md-ripple,
-    .md-ripple-container {
-      border-radius: 50%;
-    }
-  }
-
-  .md-secondary-container,
-  .md-secondary {
-    margin-left: $list-item-secondary-left-margin;
-    position: absolute;
-    right: $list-item-padding-horizontal;
-    top: 50%;
-    transform: translate3d(0, -50%, 0);
-  }
-
-  & > .md-button.md-secondary-container > .md-secondary {
-    margin-left: 0px;
-    position: static;
-  }
-
-  & > p, & > .md-list-item-inner > p {
-    flex: 1;
-    margin: 0;
-  }
-}
-
-
-md-list-item.md-2-line,
-md-list-item.md-2-line > .md-no-style,
-md-list-item.md-3-line,
-md-list-item.md-3-line > .md-no-style {
-  align-items: flex-start;
-
-  .md-list-item-text {
-    flex: 1;
-    padding: $baseline-grid * 2 0;
-    text-overflow: ellipsis;
-
-    &.md-offset {
-      margin-left: $list-item-primary-width;
-    }
-
-    h3 {
-      font-size: $subhead-font-size-base;
-      font-weight: 400;
-      letter-spacing: 0.010em;
-      margin: $list-h3-margin;
-      line-height: $list-header-line-height;
-    }
-    h4 {
-      font-size: $body-font-size-base;
-      letter-spacing: 0.010em;
-      margin: $list-h4-margin;
-      font-weight: $list-h4-font-weight;
-      line-height: $list-header-line-height;
-    }
-    p {
-      font-size: $body-font-size-base;
-      font-weight: 500;
-      letter-spacing: 0.010em;
-      margin: $list-p-margin;
-      line-height: $list-p-line-height;
-    }
-  }
-}
-
-md-list-item.md-2-line,
-md-list-item.md-2-line > .md-no-style {
-  > .md-avatar:first-child {
-    margin-top: $baseline-grid * 1.5;
-  }
-  > md-icon:first-child {
-    align-self: flex-start;
-  }
-  .md-list-item-text {
-    flex: 1;
-    padding-top: ($baseline-grid * 2.5) - 1;
-  }
-}
-
-md-list-item.md-3-line,
-md-list-item.md-3-line > .md-no-style {
-  > md-icon:first-child, 
-  > .md-avatar:first-child {
-    margin-top: $baseline-grid * 2;
   }
 }
 
@@ -3385,179 +3188,128 @@ md-toolbar {
   }
 }
 
-$progress-circular-ease-in-out : cubic-bezier(0.35, 0, 0.25, 1) !default;
-$progress-circular-duration : 5.25s !default;
-$progress-circular-circle-duration : $progress-circular-duration * 0.25 !default;
-$progress-circular-outer-duration : $progress-circular-duration * (5 / 9) !default;
-$progress-circular-sporadic-duration : $progress-circular-duration !default;
-$progress-circular-size : 50px !default;
+$radio-width: 16px !default;
+$radio-height: $radio-width !default;
+$radio-text-margin: 10px !default;
+$radio-top-left: -15px !default;
 
-@keyframes outer-rotate {
-  100% { transform: rotate(360deg); }
-}
-@keyframes left-wobble {
-  0%, 100% { transform: rotate(130deg); }
-  50% { transform: rotate( -5deg); }
-}
-@keyframes right-wobble {
-  0%, 100% { transform: rotate(-130deg); }
-  50% { transform: rotate(   5deg); }
-}
-@keyframes sporadic-rotate {
-  12.5% { transform: rotate( 135deg); }
-  25% { transform: rotate( 270deg); }
-  37.5% { transform: rotate( 405deg); }
-  50% { transform: rotate( 540deg); }
-  62.5% { transform: rotate( 675deg); }
-  75% { transform: rotate( 810deg); }
-  87.5% { transform: rotate( 945deg); }
-  100% { transform: rotate(1080deg); }
-}
-
-md-progress-circular {
-  width: $progress-circular-size;
-  height: $progress-circular-size;
+md-radio-button,
+.md-switch-thumb { // Used in switch
+  box-sizing: border-box;
   display: block;
-  position: relative;
-  padding-top: 0 !important;
-  margin-bottom: 0 !important;
-  overflow: hidden;
-  .md-inner {
-    width: $progress-circular-size;
-    height: $progress-circular-size;
+  margin: 15px;
+  white-space: nowrap;
+  cursor: pointer;
+
+  *,
+  *:before,
+  *:after {
+    box-sizing: border-box;
+  }
+
+  input {
+    display: none;
+  }
+
+  .md-container {
     position: relative;
-    .md-gap {
+    top: 4px;
+    display: inline-block;
+    width: $radio-width;
+    height: $radio-width;
+    cursor: pointer;
+
+    .md-ripple-container {
       position: absolute;
-      left: $progress-circular-size * 0.5 - 1;
-      right: $progress-circular-size * 0.5 - 1;
-      top: 0;
-      bottom: 0;
-      border-top-width: 5px;
-      border-top-style: solid;
-      box-sizing: border-box;
+      display: block;
+      width: $radio-width * 3;
+      height: $radio-width * 3;
+      left: -$radio-width;
+      top: -$radio-width;
     }
-    .md-left, .md-right {
+
+    &:before {
+      background-color: transparent;
+      border-radius: 50%;
+      content: '';
       position: absolute;
-      top: 0;
-      height: $progress-circular-size;
-      width: $progress-circular-size * 0.5;
-      overflow: hidden;
-      .md-half-circle {
-        position: absolute;
-        top: 0;
-        width: $progress-circular-size;
-        height: $progress-circular-size;
-        box-sizing: border-box;
-        border-width: 5px;
-        border-style: solid;
-        border-bottom-color: transparent;
-        border-radius: 50%;
-      }
-    }
-    .md-left {
+      display: block;
+      height: auto;
       left: 0;
-      .md-half-circle {
-        left: 0;
-        border-right-color: transparent;
-      }
-    }
-    .md-right {
+      top: 0;
       right: 0;
-      .md-half-circle {
-        right: 0;
-        border-left-color: transparent;
-      }
+      bottom: 0;
+      transition: all 0.5s;
+      width: auto;
     }
   }
 
-  // TODO: This while-loop generates about 2 kilobytes of css after gzip.
-  // Refactor progressCircular to animate with javascript.
-  $i: 0;
-  @while $i <= 100 {
-    &[value="#{$i}"] {
-      .md-inner {
-        .md-left {
-          .md-half-circle {
-            @if $i <= 50 {
-              transform: rotate(135deg);
-            } @else {
-              transition: transform 0.1s linear;
-              $deg: ($i - 50) / 50 * 180 + 135;
-              transform: rotate(#{$deg}deg);
-            }
-          }
-        }
-        .md-right {
-          .md-half-circle {
-            @if $i <= 50 {
-              transition: transform 0.1s linear;
-              $deg: $i / 50 * 180 - 135;
-              transform: rotate(#{$deg}deg);
-            } @else {
-              transform: rotate(45deg);
-            }
-          }
-        }
-        .md-gap {
-          border-bottom-width: 5px;
-          border-bottom-style: solid;
-          @if $i <= 50 {
-            border-bottom-color: transparent !important;
-          } @else {
-            transition: border-bottom-color 0.1s linear;
-          }
-        }
-      }
-    }
-    $i: $i + 1;
+  &.md-align-top-left > div.md-container {
+     top: $radio-top-left;
+   }
+
+  .md-off {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: $radio-width;
+    height: $radio-width;
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 50%;
+    transition: border-color ease 0.28s;
   }
 
-  &[md-mode=indeterminate] {
-    .md-spinner-wrapper {
-      animation: outer-rotate $progress-circular-outer-duration linear infinite;
-      .md-inner {
-        animation: sporadic-rotate $progress-circular-sporadic-duration $progress-circular-ease-in-out infinite;
-        .md-left, .md-right {
-          .md-half-circle {
-            animation-iteration-count: infinite;
-            animation-duration: ($progress-circular-duration * 0.25);
-            animation-timing-function: $progress-circular-ease-in-out;
-          }
-        }
-        .md-left {
-          .md-half-circle {
-            animation-name: left-wobble;
-          }
-        }
-        .md-right {
-          .md-half-circle {
-            animation-name: right-wobble;
-          }
-        }
-      }
+  .md-on {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: $radio-width;
+    height: $radio-width;
+    border-radius: 50%;
+    transition: transform ease 0.28s;
+    transform: scale(0);
+  }
+
+  &.md-checked .md-on {
+    transform: scale(0.50);
+  }
+
+  .md-label {
+    position: relative;
+    display: inline-block;
+
+    @include rtl(margin-left, $radio-text-margin, 0);
+    @include rtl(margin-right, 0, $radio-text-margin);
+
+    vertical-align: middle;
+    white-space: normal;
+    pointer-events: none;
+    width: auto;
+  }
+
+  .circle {
+    border-radius: 50%;
+  }
+
+}
+md-radio-group {
+  &:focus {
+    outline: none;
+  }
+  &.md-focused {
+    .md-checked .md-container:before {
+      left: -8px;
+      top: -8px;
+      right: -8px;
+      bottom: -8px;
     }
   }
 }
 
-.ng-hide md-progress-circular,
-md-progress-circular.ng-hide {
-  &[md-mode=indeterminate] {
-    .md-spinner-wrapper {
-      animation: none;
-      .md-inner {
-        animation: none;
-        .md-left {
-          .md-half-circle {
-            animation-name: none;
-          }
-        }
-        .md-right {
-          .md-half-circle {
-            animation-name: none;
-          }
-        }
-      }
-    }
+@media screen and (-ms-high-contrast: active) {
+  md-radio-button.md-default-theme .md-on {
+    background-color: #fff;
   }
 }
 
@@ -3751,126 +3503,6 @@ md-progress-linear[md-mode="indeterminate"] {
   }
 }
 
-$radio-width: 16px !default;
-$radio-height: $radio-width !default;
-$radio-text-margin: 10px !default;
-$radio-top-left: -15px !default;
-
-md-radio-button,
-.md-switch-thumb { // Used in switch
-  box-sizing: border-box;
-  display: block;
-  margin: 15px;
-  white-space: nowrap;
-  cursor: pointer;
-
-  .md-container {
-    box-sizing: border-box;
-    position: relative;
-    top: 4px;
-    display: inline-block;
-    width: $radio-width;
-    height: $radio-width;
-    cursor: pointer;
-
-    .md-ripple-container {
-      position: absolute;
-      display: block;
-      width: $radio-width * 3;
-      height: $radio-width * 3;
-      left: -$radio-width;
-      top: -$radio-width;
-    }
-
-    &:before {
-      box-sizing: border-box;
-      background-color: transparent;
-      border-radius: 50%;
-      content: '';
-      position: absolute;
-      display: block;
-      height: auto;
-      left: 0;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      transition: all 0.5s;
-      width: auto;
-    }
-  }
-
-  &.md-align-top-left > div.md-container {
-     top: $radio-top-left;
-   }
-
-  .md-off {
-    box-sizing: border-box;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: $radio-width;
-    height: $radio-width;
-    border-style: solid;
-    border-width: 2px;
-    border-radius: 50%;
-    transition: border-color ease 0.28s;
-  }
-
-  .md-on {
-    box-sizing: border-box;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: $radio-width;
-    height: $radio-width;
-    border-radius: 50%;
-    transition: transform ease 0.28s;
-    transform: scale(0);
-  }
-
-  &.md-checked .md-on {
-    transform: scale(0.50);
-  }
-
-  .md-label {
-    box-sizing: border-box;
-    position: relative;
-    display: inline-block;
-
-    @include rtl(margin-left, $radio-text-margin, 0);
-    @include rtl(margin-right, 0, $radio-text-margin);
-
-    vertical-align: middle;
-    white-space: normal;
-    pointer-events: none;
-    width: auto;
-  }
-
-  .circle {
-    border-radius: 50%;
-  }
-
-}
-md-radio-group {
-  &:focus {
-    outline: none;
-  }
-  &.md-focused {
-    .md-checked .md-container:before {
-      left: -8px;
-      top: -8px;
-      right: -8px;
-      bottom: -8px;
-    }
-  }
-}
-
-@media screen and (-ms-high-contrast: active) {
-  md-radio-button.md-default-theme .md-on {
-    background-color: #fff;
-  }
-}
-
 $select-option-height: 48px;
 $select-option-padding: 16px;
 $select-container-padding: 16px;
@@ -3901,11 +3533,11 @@ $select-max-visible-options: 5;
     opacity: 1;
     md-select-menu {
       transition: $swift-ease-out;
-      transition-duration: 150ms;
+      transition-duration: 200ms;
       > * {
         opacity: 1;
         transition: $swift-ease-in;
-        transition-duration: 150ms;
+        transition-duration: 200ms;
         transition-delay: 100ms;
       }
     }
@@ -3960,7 +3592,6 @@ md-select {
   padding: 2px 2px 1px;
   border-bottom-width: 1px;
   border-bottom-style: solid;
-  background-color: rgba(0,0,0,0);
   position: relative;
   box-sizing: content-box;
   min-width: 8 * $baseline-grid;
@@ -3977,7 +3608,6 @@ md-select {
   }
 
   .md-select-icon {
-    display: block;
     align-items: flex-end;
     text-align: end;
     width: 3 * $baseline-grid;
@@ -4050,7 +3680,6 @@ md-option {
   }
 
   .md-text {
-    @include not-selectable();
     width: auto;
     white-space: nowrap;
     overflow: hidden;
@@ -4100,6 +3729,12 @@ md-sidenav {
   bottom: 0;
   background-color: white;
   overflow: auto;
+
+  *,
+  *:before,
+  *:after {
+    box-sizing: border-box;
+  }
 
   ul {
     list-style: none;
@@ -4387,9 +4022,10 @@ md-slider {
   }
   .md-focus-ring {
     @include slider-thumb-position($slider-focus-thumb-width, $slider-focus-thumb-height);
+    border: 2px solid #D6D6D6;
+    background-color: transparent;
     transform: scale(0);
     transition: all 0.2s linear;
-    opacity: 0.26;
   }
   .md-disabled-thumb {
     @include slider-thumb-position(
@@ -4496,23 +4132,6 @@ md-slider {
 }
 
 
-.md-sticky-clone {
-  z-index: 2;
-  top: 0;
-  left: 0;
-  right: 0;
-  position: absolute !important;
-
-  transform: translate3d(-9999px,-9999px,0);
-
-  &[sticky-state="active"] {
-    transform: translate3d(0, 0, 0);
-    &:not(.md-sticky-no-effect) .md-subheader-inner {
-      animation: subheaderStickyHoverIn 0.3s ease-out both;
-    }
-  }
-}
-
 $subheader-line-height: 1em !default;
 $subheader-font-size: rem(1.4) !default;
 $subheader-padding: ($baseline-grid * 2) 0px ($baseline-grid * 2) ($baseline-grid * 2) !default;
@@ -4538,39 +4157,6 @@ $subheader-sticky-shadow: 0px 2px 4px 0 rgba(0,0,0,0.16) !default;
   }
 }
 
-.md-subheader-wrapper {
-
-  &:not(.md-sticky-no-effect) {
-    .md-subheader {
-      margin: 0;
-    }
-
-    .md-subheader:after {
-      position: absolute;
-      left: 0;
-      bottom: 0;
-      top: 0;
-      right: -$subheader-margin-right;
-      content: '';
-    }
-
-    transition: 0.2s ease-out margin;
-
-    &.md-sticky-clone {
-      z-index: 2;
-    }
-
-    &[sticky-state="active"] {
-      margin-top: -2px;
-    }
-
-    &:not(.md-sticky-clone)[sticky-prev-state="active"] .md-subheader-inner:after {
-      animation: subheaderStickyHoverOut 0.3s ease-out both;
-    }
-  }
-
-}
-
 .md-subheader {
   display: block;
   font-size: $subheader-font-size;
@@ -4584,9 +4170,48 @@ $subheader-sticky-shadow: 0px 2px 4px 0 rgba(0,0,0,0.16) !default;
     padding: $subheader-padding;
   }
 
+  &:not(.md-sticky-no-effect) {
+    &:after {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      top: 0;
+      right: -$subheader-margin-right;
+      content: '';
+    }
+
+    transition: 0.2s ease-out margin;
+    &.md-sticky-clone {
+      z-index: 2;
+    }
+    &[sticky-state="active"] {
+      margin-top: -2px;
+    }
+    &:not(.md-sticky-clone)[sticky-prev-state="active"] .md-subheader-inner:after {
+      animation: subheaderStickyHoverOut 0.3s ease-out both;
+    }
+  }
+
   .md-subheader-content {
     z-index: 1;
     position: relative;
+  }
+}
+
+.md-sticky-clone {
+  z-index: 2;
+  top: 0;
+  left: 0;
+  right: 0;
+  position: absolute !important;
+
+  transform: translate3d(-9999px,-9999px,0);
+
+  &[sticky-state="active"] {
+    transform: translate3d(0, 0, 0);
+    &:not(.md-sticky-no-effect) .md-subheader-inner {
+      animation: subheaderStickyHoverIn 0.3s ease-out both;
+    }
   }
 }
 
@@ -4726,6 +4351,362 @@ md-switch {
   }
   md-switch.md-default-theme .md-thumb {
     background-color: #fff;
+  }
+}
+
+$toolbar-tools-height: 64px !default;
+$toolbar-height: 64px !default;
+$toolbar-medium-tall-height: 88px !default;
+$toolbar-tall-height: 128px !default;
+$toolbar-indent-margin: 64px !default;
+$toolbar-padding: 16px !default;
+
+$icon-button-margin-offset: rem(-0.800) !default;
+
+md-toolbar {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+
+  position: relative;
+  z-index: 2;
+
+  font-size: rem(2.0);
+  min-height: $baseline-grid * 8;
+  width: 100%;
+  &.md-whiteframe-z1-add, &.md-whiteframe-z1-remove {
+    transition: box-shadow $swift-ease-in-out-duration linear;
+  }
+
+  *,
+  *:before,
+  *:after {
+    box-sizing: border-box;
+  }
+
+  &.md-tall {
+    height: $toolbar-tall-height;
+    min-height: $toolbar-tall-height;
+    max-height: $toolbar-tall-height;
+  }
+
+  &.md-medium-tall {
+    height: $toolbar-medium-tall-height;
+    min-height: $toolbar-medium-tall-height;
+    max-height: $toolbar-medium-tall-height;
+
+    .md-toolbar-tools {
+      height: 48px;
+      min-height: 48px;
+      max-height: 48px;
+    }
+  }
+
+  .md-indent {
+    margin-left: $toolbar-indent-margin;
+  }
+
+  ~ md-content {
+    > md-list {
+      padding: 0;
+
+      md-list-item:last-child {
+        md-divider {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+.md-toolbar-tools {
+  font-size: $title-font-size-base;
+  letter-spacing: 0.005em;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+
+  width: 100%;
+  height: $toolbar-tools-height;
+  max-height: $toolbar-tools-height;
+  padding: 0 $toolbar-padding;
+  margin: 0;
+
+  h1, h2, h3 {
+    font-size: inherit;
+    font-weight: inherit;
+    margin: inherit;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .fill-height {
+    display: flex;
+    align-items: center;
+  }
+  .md-button {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  &> .md-button:first-child {
+    margin-left: $icon-button-margin-offset;
+  }
+  &> .md-button:last-child {
+    margin-right: $icon-button-margin-offset;
+  }
+
+  &> md-menu:last-child {
+    margin-right: $icon-button-margin-offset;
+    & > .md-button {
+      margin-right: 0;
+    }
+  }
+
+  @media screen and (-ms-high-contrast: active) {
+    border-bottom: 1px solid #fff;
+  }
+}
+
+$tooltip-fontsize-lg: rem(1);
+$tooltip-fontsize-sm: rem(1.4);
+$tooltip-height-lg: rem(2.2);
+$tooltip-height-sm: rem(3.2);
+$tooltip-top-margin-lg: rem(1.4);
+$tooltip-top-margin-sm: rem(2.4);
+$tooltip-lr-padding-lg: rem(0.8);
+$tooltip-lr-padding-sm: rem(1.6);
+$tooltip-max-width: rem(3.20);
+
+md-tooltip {
+  position: absolute;
+  z-index: $z-index-tooltip;
+  overflow: hidden;
+  pointer-events: none;
+  border-radius: 4px;
+
+  font-weight: 500;
+  font-size: $tooltip-fontsize-sm;
+  @media screen and (min-width: $layout-breakpoint-sm) {
+    font-size: $tooltip-fontsize-lg;
+  }
+
+  .md-background {
+    position: absolute;
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 1;
+    &.md-show-add {
+      transition: $swift-ease-out;
+      transform: translate(-50%, -50%) scale(0);
+      opacity: 0;
+    }
+    &.md-show, &.md-show-add-active {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+    }
+    &.md-show-remove {
+      transition: $swift-ease-in;
+      &.md-show-remove-active {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
+      }
+    }
+  }
+  .md-content {
+    position: relative;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    background: transparent;
+    opacity: 0;
+
+    height: $tooltip-height-sm;
+    line-height: $tooltip-height-sm;
+    padding-left: $tooltip-lr-padding-sm;
+    padding-right: $tooltip-lr-padding-sm;
+    @media screen and (min-width: $layout-breakpoint-sm) {
+      height: $tooltip-height-lg;
+      line-height: $tooltip-height-lg;
+      padding-left: $tooltip-lr-padding-lg;
+      padding-right: $tooltip-lr-padding-lg;
+    }
+    &.md-show-add {
+      transition: $swift-ease-out;
+      opacity: 0;
+    }
+    &.md-show, &.md-show-add-active {
+      opacity: 1;
+    }
+    &.md-show-remove {
+      transition: $swift-ease-in;
+      &.md-show-remove-active {
+        opacity: 0;
+      }
+    }
+  }
+
+  &.md-hide {
+    transition: $swift-ease-in;
+  }
+
+  &.md-show {
+    transition: $swift-ease-out;
+    pointer-events: auto;
+    transform: translate3d(0,0,0);
+  }
+}
+
+// See height set globally, depended on by buttons
+
+
+md-toast {
+  display: flex;
+  position:absolute;
+  box-sizing: border-box;
+  align-items: center;
+
+  min-height: 48px;
+  padding-left: 24px;
+  padding-right: 24px;
+
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+  border-radius: 2px;
+  font-size: 14px;
+  cursor: default;
+
+  max-width: 100%;
+  max-height: 40px;
+
+  height: $toast-height;
+  z-index: $z-index-toast;
+
+  &.md-capsule {
+    border-radius: 24px;
+  }
+
+  opacity: 1;
+  transform: translate3d(0,0,0) rotateZ(0deg);
+  transition: $swift-ease-out;
+
+  &.ng-leave-active {
+    transition: $swift-ease-in;
+  }
+
+  /* Transition differently when swiping */
+  &.md-swipeleft,
+  &.md-swiperight,
+  &.md-swipeup,
+  &.md-swipedown {
+    transition: $swift-ease-out;
+  }
+
+  &.ng-enter {
+    transform: translate3d(0, 100%, 0);
+    &.md-top {
+      transform: translate3d(0, -100%, 0);
+    }
+    opacity: 0;
+    &.ng-enter-active {
+      transform: translate3d(0, 0, 0);
+      opacity: 1;
+    }
+  }
+  &.ng-leave.ng-leave-active {
+    opacity: 0;
+    transform: translate3d(0, 100%, 0);
+    &.md-top {
+      transform: translate3d(0, -100%, 0);
+    }
+    &.md-swipeleft {
+      transform: translate3d(-100%, 0%, 0);
+    }
+    &.md-swiperight {
+      transform: translate3d(100%, 0%, 0);
+    }
+  }
+
+  .md-action {
+    line-height: 19px;
+    margin-left: 24px;
+    cursor: pointer;
+    text-transform: uppercase;
+    float: right;
+
+    &.md-button {
+      min-width: 0;
+    }
+  }
+}
+
+@media (max-width: $layout-breakpoint-sm) {
+  md-toast {
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    border-radius: 0;
+    bottom: 0;
+    &.md-top {
+      bottom: auto;
+      top: 0;
+    }
+  }
+}
+@media (min-width: $layout-breakpoint-sm) {
+  md-toast {
+    min-width: 288px;
+    &.md-bottom {
+      bottom: $toast-margin;
+    }
+    &.md-left {
+      left: $toast-margin;
+    }
+    &.md-right {
+      right: $toast-margin;
+    }
+    &.md-top {
+      top: $toast-margin;
+    }
+
+    /*
+     * When the toast doesn't take up the whole screen,
+     * make it rotate when the user swipes it away
+     */
+    &.ng-leave.ng-leave-active {
+      &.md-swipeleft {
+        transform: translate3d(-100%, 25%, 0) rotateZ(-15deg);
+      }
+      &.md-swiperight {
+        transform: translate3d(100%, 25%, 0) rotateZ(15deg);
+      }
+      &.md-top {
+        &.md-swipeleft {
+          transform: translate3d(-100%, 0, 0) rotateZ(-15deg);
+        }
+        &.md-swiperight {
+          transform: translate3d(100%, 0, 0) rotateZ(15deg);
+        }
+      }
+    }
+  }
+}
+
+@media (min-width: $layout-breakpoint-lg) {
+  md-toast {
+    max-width: $baseline-grid * 71;
+  }
+}
+
+
+
+@media screen and (-ms-high-contrast: active) {
+  md-toast {
+    border: 1px solid #fff;
   }
 }
 
@@ -5021,395 +5002,25 @@ md-toolbar + md-tabs {
   border-top-right-radius: 0;
 }
 
-// See height set globally, depended on by buttons
-
-
-md-toast {
-  display: flex;
-  position:absolute;
-  z-index: $z-index-toast;
-
-  box-sizing: border-box;
-  align-items: center;
-
-  min-height: 48px;
-  padding-left: 24px;
-  padding-right: 24px;
-
-  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
-  border-radius: 2px;
-  font-size: 14px;
-  cursor: default;
-
-  height:auto;
-  max-height: 7*$toast-height;
-  max-width: 100%;
-
-  overflow:hidden;
-
-  &.md-capsule {
-    border-radius: 24px;
-  }
-
-  opacity: 1;
-  transform: translate3d(0,0,0) rotateZ(0deg);
-  transition: $swift-ease-out;
-
-  &.ng-leave-active {
-    transition: $swift-ease-in;
-  }
-
-  /* Transition differently when swiping */
-  &.md-swipeleft,
-  &.md-swiperight,
-  &.md-swipeup,
-  &.md-swipedown {
-    transition: $swift-ease-out;
-  }
-
-  &.ng-enter {
-    transform: translate3d(0, 100%, 0);
-    &.md-top {
-      transform: translate3d(0, -100%, 0);
-    }
-    opacity: 0;
-    &.ng-enter-active {
-      transform: translate3d(0, 0, 0);
-      opacity: 1;
-    }
-  }
-  &.ng-leave.ng-leave-active {
-    opacity: 0;
-    transform: translate3d(0, 100%, 0);
-    &.md-top {
-      transform: translate3d(0, -100%, 0);
-    }
-    &.md-swipeleft {
-      transform: translate3d(-100%, 0%, 0);
-    }
-    &.md-swiperight {
-      transform: translate3d(100%, 0%, 0);
-    }
-  }
-
-  .md-action {
-    line-height: 19px;
-    margin-left: 24px;
-    cursor: pointer;
-    text-transform: uppercase;
-    float: right;
-
-    &.md-button {
-      min-width: 0;
-    }
-  }
+.md-whiteframe-z1 {
+  box-shadow: $whiteframe-shadow-z1;
 }
-
-@media (max-width: $layout-breakpoint-sm) {
-  md-toast {
-    left: 0;
-    right: 0;
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
-    border-radius: 0;
-    bottom: 0;
-    &.md-top {
-      bottom: auto;
-      top: 0;
-    }
-  }
+.md-whiteframe-z2 {
+  box-shadow: $whiteframe-shadow-z2;
 }
-@media (min-width: $layout-breakpoint-sm) {
-  md-toast {
-    min-width: 288px;
-    &.md-bottom {
-      bottom: $toast-margin;
-    }
-    &.md-left {
-      left: $toast-margin;
-    }
-    &.md-right {
-      right: $toast-margin;
-    }
-    &.md-top {
-      top: $toast-margin;
-    }
-
-    /*
-     * When the toast doesn't take up the whole screen,
-     * make it rotate when the user swipes it away
-     */
-    &.ng-leave.ng-leave-active {
-      &.md-swipeleft {
-        transform: translate3d(-100%, 25%, 0) rotateZ(-15deg);
-      }
-      &.md-swiperight {
-        transform: translate3d(100%, 25%, 0) rotateZ(15deg);
-      }
-      &.md-top {
-        &.md-swipeleft {
-          transform: translate3d(-100%, 0, 0) rotateZ(-15deg);
-        }
-        &.md-swiperight {
-          transform: translate3d(100%, 0, 0) rotateZ(15deg);
-        }
-      }
-    }
-  }
+.md-whiteframe-z3 {
+  box-shadow: $whiteframe-shadow-z3;
 }
-
-@media (min-width: $layout-breakpoint-lg) {
-  md-toast {
-    max-width: $baseline-grid * 71;
-  }
+.md-whiteframe-z4 {
+  box-shadow: $whiteframe-shadow-z4;
 }
-
-
+.md-whiteframe-z5 {
+  box-shadow: $whiteframe-shadow-z5;
+}
 
 @media screen and (-ms-high-contrast: active) {
-  md-toast {
+  md-whiteframe {
     border: 1px solid #fff;
-  }
-}
-
-// Standard/Desktop Heights
-$toolbar-tools-height: 64px !default;
-$toolbar-height: 64px !default;
-$toolbar-medium-tall-height: 88px !default;
-$toolbar-tall-height: 128px !default;
-
-// Mobile portrait heights
-$toolbar-tools-height-mobile-portrait: 56px !default;
-$toolbar-height-mobile-portrait: 56px !default;
-
-// Mobile landscape heights
-$toolbar-tools-height-mobile-landscape: 48px !default;
-$toolbar-height-mobile-landscape: 48px !default;
-
-
-$toolbar-indent-margin: 64px !default;
-$toolbar-padding: 16px !default;
-
-$icon-button-margin-offset: rem(-0.800) !default;
-
-md-toolbar {
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-
-  position: relative;
-  z-index: 2;
-
-  font-size: rem(2.0);
-  min-height: $baseline-grid * 8;
-  width: 100%;
-
-  &.md-whiteframe-z1-add, &.md-whiteframe-z1-remove {
-    transition: box-shadow $swift-ease-in-out-duration linear;
-  }
-
-  &.md-tall {
-    height: $toolbar-tall-height;
-    min-height: $toolbar-tall-height;
-    max-height: $toolbar-tall-height;
-  }
-
-  &.md-medium-tall {
-    height: $toolbar-medium-tall-height;
-    min-height: $toolbar-medium-tall-height;
-    max-height: $toolbar-medium-tall-height;
-
-    .md-toolbar-tools {
-      height: 48px;
-      min-height: 48px;
-      max-height: 48px;
-    }
-  }
-
-  .md-indent {
-    margin-left: $toolbar-indent-margin;
-  }
-
-  ~ md-content {
-    > md-list {
-      padding: 0;
-
-      md-list-item:last-child {
-        md-divider {
-          display: none;
-        }
-      }
-    }
-  }
-}
-
-.md-toolbar-tools {
-  font-size: $title-font-size-base;
-  letter-spacing: 0.005em;
-  box-sizing: border-box;
-  font-weight: 400;
-  display: flex;
-  align-items: center;
-  flex-direction: row;
-
-  width: 100%;
-  height: $toolbar-tools-height;
-  max-height: $toolbar-tools-height;
-  padding: 0 $toolbar-padding;
-  margin: 0;
-
-  h1, h2, h3 {
-    font-size: inherit;
-    font-weight: inherit;
-    margin: inherit;
-  }
-
-  a {
-    color: inherit;
-    text-decoration: none;
-  }
-  .fill-height {
-    display: flex;
-    align-items: center;
-  }
-  .md-button {
-    margin-top: 0;
-    margin-bottom: 0;
-  }
-  &> .md-button:first-child {
-    margin-left: $icon-button-margin-offset;
-  }
-  &> .md-button:last-child {
-    margin-right: $icon-button-margin-offset;
-  }
-
-  &> md-menu:last-child {
-    margin-right: $icon-button-margin-offset;
-    & > .md-button {
-      margin-right: 0;
-    }
-  }
-
-  @media screen and (-ms-high-contrast: active) {
-    border-bottom: 1px solid #fff;
-  }
-}
-
-// Handle mobile portrait
-@media only screen and (min-width: 0) and (max-width: $layout-breakpoint-sm) and
-  (orientation: portrait) {
-  md-toolbar {
-    min-height: $toolbar-height-mobile-portrait;
-  }
-
-  .md-toolbar-tools {
-    height: $toolbar-height-mobile-portrait;
-    max-height: $toolbar-height-mobile-portrait;
-  }
-}
-
-// Handle mobile landscape
-@media only screen and (min-width: 0) and (max-width: $layout-breakpoint-sm) and
-  (orientation: landscape) {
-  md-toolbar {
-    min-height: $toolbar-height-mobile-landscape;
-  }
-
-  .md-toolbar-tools {
-    height: $toolbar-height-mobile-landscape;
-    max-height: $toolbar-height-mobile-landscape;
-  }
-}
-
-
-$tooltip-fontsize-lg: rem(1);
-$tooltip-fontsize-sm: rem(1.4);
-$tooltip-height-lg: rem(2.2);
-$tooltip-height-sm: rem(3.2);
-$tooltip-top-margin-lg: rem(1.4);
-$tooltip-top-margin-sm: rem(2.4);
-$tooltip-lr-padding-lg: rem(0.8);
-$tooltip-lr-padding-sm: rem(1.6);
-$tooltip-max-width: rem(3.20);
-
-md-tooltip {
-  position: absolute;
-  z-index: $z-index-tooltip;
-  overflow: hidden;
-  pointer-events: none;
-  border-radius: 4px;
-
-  font-weight: 500;
-  font-size: $tooltip-fontsize-sm;
-  @media screen and (min-width: $layout-breakpoint-sm) {
-    font-size: $tooltip-fontsize-lg;
-  }
-
-  .md-background {
-    position: absolute;
-    border-radius: 50%;
-    transform: translate(-50%, -50%) scale(0);
-    opacity: 1;
-    &.md-show-add {
-      transition: $swift-ease-out;
-      transform: translate(-50%, -50%) scale(0);
-      opacity: 0;
-    }
-    &.md-show, &.md-show-add-active {
-      transform: translate(-50%, -50%) scale(1);
-      opacity: 1;
-    }
-    &.md-show-remove {
-      transition: $swift-ease-in;
-      &.md-show-remove-active {
-        transform: translate(-50%, -50%) scale(0);
-        opacity: 0;
-      }
-    }
-  }
-  .md-content {
-    position: relative;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-
-    background: transparent;
-    opacity: 0;
-
-    height: $tooltip-height-sm;
-    line-height: $tooltip-height-sm;
-    padding-left: $tooltip-lr-padding-sm;
-    padding-right: $tooltip-lr-padding-sm;
-    @media screen and (min-width: $layout-breakpoint-sm) {
-      height: $tooltip-height-lg;
-      line-height: $tooltip-height-lg;
-      padding-left: $tooltip-lr-padding-lg;
-      padding-right: $tooltip-lr-padding-lg;
-    }
-    &.md-show-add {
-      transition: $swift-ease-out;
-      opacity: 0;
-    }
-    &.md-show, &.md-show-add-active {
-      opacity: 1;
-    }
-    &.md-show-remove {
-      transition: $swift-ease-in;
-      &.md-show-remove-active {
-        opacity: 0;
-      }
-    }
-  }
-
-  &.md-hide {
-    transition: $swift-ease-in;
-  }
-
-  &.md-show {
-    transition: $swift-ease-out;
-    pointer-events: auto;
-    transform: translate3d(0,0,0);
   }
 }
 
@@ -5429,6 +5040,7 @@ $virtual-repeat-scrollbar-width: 16px;
     left: 0;
     margin: 0;
     overflow-x: hidden;
+    overflow-y: auto;
     padding: 0;
     position: absolute;
     right: 0;
@@ -5469,27 +5081,5 @@ $virtual-repeat-scrollbar-width: 16px;
     bottom: $virtual-repeat-scrollbar-width;
     right: auto;
     white-space: nowrap;
-  }
-}
-
-.md-whiteframe-z1 {
-  box-shadow: $whiteframe-shadow-z1;
-}
-.md-whiteframe-z2 {
-  box-shadow: $whiteframe-shadow-z2;
-}
-.md-whiteframe-z3 {
-  box-shadow: $whiteframe-shadow-z3;
-}
-.md-whiteframe-z4 {
-  box-shadow: $whiteframe-shadow-z4;
-}
-.md-whiteframe-z5 {
-  box-shadow: $whiteframe-shadow-z5;
-}
-
-@media screen and (-ms-high-contrast: active) {
-  md-whiteframe {
-    border: 1px solid #fff;
   }
 }
